@@ -20,7 +20,9 @@ def get_times_to_ring():
     url = 'https://spreadsheets.google.com/feeds/list/1Baj0j80ewjzpnL8GOfGpdqbnxAsueIl-DHCLTQ7PO70/od6/public/basic?prettyprint=true&alt=json'
     response = urllib2.urlopen(url)
     html = response.read()
-    html = json.loads(html)
+
+    html =json.loads(html.decode('utf-8'))
+    # = json.loads()
 
     format = ['column1', 'column2', 'column3']     
     day = datetime.datetime.today().weekday()
@@ -30,25 +32,69 @@ def get_times_to_ring():
     times = list(map(lambda x:x.split(":")[1].strip().replace("'",""),str(row).split(",")))[1:]
     return times
 
+def playnote(frequency,duration):
+    winsound.Beep(frequency,duration)
+    time.sleep(.10)
+    
+
 def ring_the_bell():
     print("DING!!!!")
-    notes = [1521,1809,2280,3043,2280,3043]
-    for note in notes[:-1]:
-        winsound.Beep(note,250)
+    notes = {"C":1635,"F":2183,"A":2750,"HiC":3270}
+    '''
+    1/4	1/8	1/8 1/16	 	Tempo	1/4	1/8	1/8 1/16
+90	667	333	222	167	 	    150	    400	200	133	100
+    '''    
     
-    winsound.Beep(notes[-1], 1000)
 
+    playnote(notes["C"],333)
+    playnote(notes["C"],84)
+
+    playnote(notes["F"], 167)
+    playnote(notes["C"],167)
+    playnote(notes["F"], 167)
+    playnote(notes["A"], 167)
+    playnote(notes["F"], 333)
+
+    playnote(notes["F"], 333)
+    playnote(notes["F"], 84)
+    playnote(notes["A"], 167)
+    playnote(notes["F"], 167)
+    playnote(notes["A"], 167)
+    playnote(notes["HiC"], 167)
+    playnote(notes["A"], 333)
+
+    playnote(notes["F"], 167)
+    playnote(notes["A"], 167)
+    playnote(notes["HiC"], 333)
+    playnote(notes["A"], 167)
+    playnote(notes["F"], 167)
+
+    playnote(notes["C"], 333)
+    playnote(notes["C"], 167)
+    playnote(notes["C"], 167)
+    playnote(notes["F"], 333)
+ 
+    playnote(notes["F"], 167)
+    playnote(notes["F"], 84)
+
+    playnote(notes["F"], 666)
+
+
+    
+    #winsound.Beep(notes["HiC"], 167)
 
 if __name__ == "__main__":
-    day_sheet_checked = 0
+    ring_the_bell()
+    hour_sheet_checked = 0
     times = get_times_to_ring()
     rung = [False for i in range(len(times))]
     while 1:    
         now = datetime.datetime.now()
         timestr = "%H%M"
-        sj_time = now.strftime(timestr)
+        sj_time = str(int(now.strftime(timestr)))
+
         index = -1
-        if(now.hour == 8 and day_sheet_checked != now.day):
+        if(now.minute == 0 and hour_sheet_checked != now.hour):
             times = get_times_to_ring()
             rung = [False for i in range(len(times))]
             day_sheet_checked = now.day        
